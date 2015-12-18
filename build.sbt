@@ -6,7 +6,7 @@ val scalarxVersion = "0.2.8"
 
 lazy val commonSettings = Seq(
   organization := "com.github.maprohu",
-  version := "0.1.0-SNAPSHOT",
+  version := "0.1.1-SNAPSHOT",
   publishMavenStyle := true,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
