@@ -1,0 +1,6 @@
+install -s mvn:org.scala-lang/scala-library/2.11.7
+install -s mvn:com.typesafe/config/1.2.1
+install -s mvn:com.typesafe.akka/akka-actor_2.11/2.3.14
+install -s mvn:com.github.maprohu/scalarx/0.2.8
+install -s mvn:com.github.maprohu/osgirx/0.1.0-SNAPSHOT
+install -s wrap:mvn:org.scala-sbt/io_2.11/1.0.0-M3

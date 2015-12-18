@@ -4,7 +4,7 @@ import java.io.File
 import java.net.URL
 
 import rx.Rx
-import sbt.IO
+import sbt.io.IO
 
 /**
   * Created by pappmar on 18/12/2015.

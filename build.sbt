@@ -6,7 +6,7 @@ val scalarxVersion = "0.2.8"
 
 lazy val commonSettings = Seq(
   organization := "com.github.maprohu",
-  version := "0.0.1-SNAPSHOT",
+  version := "0.1.0-SNAPSHOT",
   publishMavenStyle := true,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
@@ -32,13 +32,15 @@ lazy val commonSettings = Seq(
       </developers>
     ),
 
+  crossPaths := false,
+
   scalaVersion := "2.11.7",
   OsgiKeys.additionalHeaders ++= Map(
     "-noee" -> "true",
     Attributes.Name.IMPLEMENTATION_VERSION.toString -> version.value
   ),
   publishArtifact in packageDoc := false,
-  OsgiKeys.exportPackage := Seq(name.value.replaceAll("-", ".")),
+  OsgiKeys.exportPackage := Seq(organization.value + "." + name.value.replaceAll("-", ".")),
   OsgiKeys.privatePackage := OsgiKeys.exportPackage.value.map(_ + ".impl"),
   OsgiKeys.bundleActivator := Some(OsgiKeys.privatePackage.value(0) + ".Activator"),
   libraryDependencies ++= Seq(
@@ -54,7 +56,7 @@ lazy val osgirx = (project in file("."))
     commonSettings,
     libraryDependencies ++= Seq(
       "com.github.maprohu" %% "scalarx" % scalarxVersion,
-      "org.scala-sbt" % "io" % "0.13.9"
+      "org.scala-sbt" %% "io" % "1.0.0-M3"
     )
 
 

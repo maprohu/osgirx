@@ -13,6 +13,10 @@ trait Killable {
 
 object Killable {
 
+  val Empty = new Killable {
+    override def kill(): Unit = {}
+  }
+
   implicit def rxToKillable(rxv: Rx[_]) : Killable = new Killable {
     override def kill(): Unit = rxv.killAll()
   }

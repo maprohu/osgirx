@@ -10,6 +10,8 @@ abstract class RxActivator[T](target: RxRef[T]) extends KillableActivator {
 
   def create : (Rx[T], Killable)
 
+  def nokill(value: Rx[T]) = (value, Killable.Empty)
+
   override def startKillable(context: BundleContext): Killable = {
     val (ref, kill) = create
     target.register(ref)
