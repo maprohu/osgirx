@@ -20,7 +20,6 @@ import scala.concurrent.duration.Duration
 class AkkaHttpActivator(akkaContext: AkkaContext, routeRx: Rx[Option[Route]], interface : String = "0.0.0.0", port: Int = 8999) extends KillableActivator {
 
   import Directives._
-  import rx.ops._
 
   val noRoute = complete { "no route" }
 
@@ -34,11 +33,6 @@ class AkkaHttpActivator(akkaContext: AkkaContext, routeRx: Rx[Option[Route]], in
     val bindingResult = http.bindAndHandle(baseRoute, interface, port)
     bindingResult.onComplete(println(_))
     bindingResult
-  }
-
-  def unbind(binding: Future[ServerBinding])(implicit ctx: AkkaContext) : Future[Unit] = {
-    import ctx._
-    binding.map( _.unbind() )
   }
 
   override def startKillable(context: BundleContext): Killable = {
@@ -69,50 +63,3 @@ class AkkaHttpActivator(akkaContext: AkkaContext, routeRx: Rx[Option[Route]], in
   }
 
 }
-
-class DefaultHttpActor(routex: Rx[Option[Route]], akkaContext: AkkaContext) extends Actor {
-
-  val obs = Obs(routex) {
-    self ! NewRoute(routex())
-  }
-
-  @throws[Exception](classOf[Exception])
-  override def postStop(): Unit = {
-    obs.kill()
-    super.postStop()
-  }
-
-  override def receive: Receive = waiting
-
-  val waiting : Receive = {
-    case NewRoute(route) =>
-      context.become(
-        route.map(
-          working(_) orElse waiting
-        ).getOrElse(
-          waiting
-        )
-      )
-  }
-
-  def working(route: Route) : Receive = {
-    import context.dispatcher
-    import akka.pattern.pipe
-
-    val flow = createRouteHandler(route)
-
-    {
-      case req : HttpRequest =>
-        flow(req) pipeTo sender
-    }
-  }
-
-
-  def createRouteHandler(route: Route) = {
-    import akkaContext.actorMaterializer
-    Route.asyncHandler(route)
-  }
-
-  case class NewRoute(route: Option[Route])
-}
-
