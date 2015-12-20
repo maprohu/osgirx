@@ -1,5 +1,8 @@
 import java.util.jar.Attributes
 
+val osgirxVersion = "0.1.2"
+val akkaApiVersion = "0.1.0"
+
 val githubRepo = "osgirx"
 val osgiVersion = "5.0.0"
 val scalarxVersion = "0.2.8"
@@ -8,7 +11,7 @@ val akkaVersion = "2.3.14"
 
 lazy val commonSettings = Seq(
   organization := "com.github.maprohu",
-  version := "0.1.1-SNAPSHOT",
+  version := osgirxVersion,
   publishMavenStyle := true,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
@@ -59,6 +62,7 @@ lazy val core = project
   .settings(
     osgiSettings,
     commonSettings,
+    name := "osgirx-core",
     libraryDependencies ++= Seq(
       "com.github.maprohu" % "scalarx" % scalarxVersion,
       "org.scala-sbt" %% "io" % "1.0.0-M3"
@@ -72,6 +76,7 @@ lazy val akkaApi = project
     osgiSettings,
     commonSettings,
     name := "osgirx-akka-api",
+    version := akkaApiVersion,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-osgi" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
@@ -88,4 +93,27 @@ lazy val akka = project
     name := "osgirx-akka",
     libraryDependencies ++= Seq(
     )
+  )
+
+lazy val akkaHttp = project
+  .enablePlugins(SbtOsgi)
+  .dependsOn(akkaApi)
+  .dependsOn(akka)
+  .settings(
+    osgiSettings,
+    commonSettings,
+    name := "osgirx-http",
+    libraryDependencies ++= Seq(
+    )
+  )
+
+lazy val root = (project in file("."))
+  .aggregate(
+    core,
+    akka,
+    akkaHttp
+  )
+  .settings(
+    publishArtifact := false,
+    publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
   )

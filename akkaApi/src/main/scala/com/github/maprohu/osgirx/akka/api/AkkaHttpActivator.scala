@@ -17,7 +17,12 @@ import scala.concurrent.duration.Duration
 /**
   * Created by maprohu on 12/20/15.
   */
-class AkkaHttpActivator(akkaContext: AkkaContext, routeRx: Rx[Option[Route]], interface : String = "0.0.0.0", port: Int = 8999) extends KillableActivator {
+class AkkaHttpActivator(
+  akkaContext: AkkaContext = new AkkaContextImpl(ActorSystem()),
+  routeRx: Rx[Option[Route]] = RxRoute.ref,
+  interface : String = "0.0.0.0",
+  port: Int = 8999
+) extends KillableActivator {
 
   import Directives._
 
