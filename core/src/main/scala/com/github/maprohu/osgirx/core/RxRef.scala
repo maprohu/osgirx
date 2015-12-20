@@ -11,6 +11,10 @@ trait RxRef[T] {
   val ref : Rx[Option[T]] = Rx(refs().headOption.flatMap(_()))
 
 
+  def register(value : T) : (Var[Option[T]], Killable) = {
+    register(Some(value))
+  }
+
   def register(value : Option[T]) : (Var[Option[T]], Killable) = {
     val v = Var(value)
     (v, register(v))

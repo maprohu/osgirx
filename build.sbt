@@ -74,7 +74,8 @@ lazy val akkaApi = project
     name := "osgirx-akka-api",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-osgi" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion
+      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
+      "org.scala-lang.modules" %% "scala-async" % "0.9.5"
     )
   )
 
