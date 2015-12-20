@@ -1,12 +1,16 @@
 package com.github.maprohu.osgirx.akka.api
 
 import akka.actor.{Props, Actor}
+import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
 import akka.http.scaladsl.server.{Directives, RoutingSettings, Route}
 import com.github.maprohu.osgirx.core.{Killable, KillableActivator}
 import org.osgi.framework.BundleContext
 import rx.Rx
 import rx.core.Obs
+
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration.Duration
 
 /**
   * Created by maprohu on 12/20/15.
@@ -15,30 +19,37 @@ class AkkaHttpActivator(route: Rx[Option[Route]], interface : String = "0.0.0.0"
   import akka.pattern.ask
 
   override def startKillable(context: BundleContext): Killable = {
-    val akkaContext : Rx[AkkaContext] = ???
+    val akkaContext : Rx[Option[AkkaContext]] = RxAkkaContext.ref
 
-    val bindingRx = Rx {
-      val ctx = akkaContext()
-      import ctx._
+    val bindingRx : Rx[Option[Future[ServerBinding]]] = Rx {
+      val ctxOpt = akkaContext()
 
-      val httpActor = actorSystem.actorOf(Props(classOf[DefaultHttpActor], route, ctx))
+      val bindingOpt = ctxOpt.map { ctx =>
+        import ctx._
 
-      val binding = http.bindAndHandleAsync(
-        handler = req => (httpActor ? req).mapTo[HttpResponse],
-        interface = interface,
-        port = port
-      )
-      binding.onComplete(b => actorSystem.log.info(b.toString))
-      binding
+        val httpActor = actorSystem.actorOf(Props(classOf[DefaultHttpActor], route, ctx))
+
+        val binding = http.bindAndHandleAsync(
+          handler = req => (httpActor ? req).mapTo[HttpResponse],
+          interface = interface,
+          port = port
+        )
+        binding.onComplete(b => actorSystem.log.info(b.toString))
+        binding
+      }
+
+      bindingOpt
+
     }
 
     () => {
-      val ctx = akkaContext()
-      import ctx._
-
-      val bnd = bindingRx()
+      val bndOpt = bindingRx()
       bindingRx.killAll()
-      bnd.foreach( _.unbind() )
+      // TODO async unbind or reasonalbe duration
+      bndOpt.foreach { fut =>
+        import scala.concurrent.ExecutionContext.Implicits.global
+        fut.foreach( b => Await.result( b.unbind(), Duration.Inf ) )
+      }
     }
   }
 
