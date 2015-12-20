@@ -3,6 +3,8 @@ import java.util.jar.Attributes
 val githubRepo = "osgirx"
 val osgiVersion = "5.0.0"
 val scalarxVersion = "0.2.8"
+val akkaHttpVersion = "2.0-M2"
+val akkaVersion = "2.3.14"
 
 lazy val commonSettings = Seq(
   organization := "com.github.maprohu",
@@ -13,8 +15,11 @@ lazy val commonSettings = Seq(
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+      Some(sbtglobal.SbtGlobals.devops)
+//      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
   },
+  credentials += sbtglobal.SbtGlobals.devopsCredentials,
+  resolvers += sbtglobal.SbtGlobals.devops,
   pomIncludeRepository := { _ => false },
   licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php")),
   homepage := Some(url(s"https://github.com/maprohu/${githubRepo}")),
@@ -49,15 +54,37 @@ lazy val commonSettings = Seq(
 )
 
 
-lazy val osgirx = (project in file("."))
+lazy val core = project
   .enablePlugins(SbtOsgi)
   .settings(
     osgiSettings,
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.github.maprohu" %% "scalarx" % scalarxVersion,
+      "com.github.maprohu" % "scalarx" % scalarxVersion,
       "org.scala-sbt" %% "io" % "1.0.0-M3"
     )
+  )
 
+lazy val akkaApi = project
+  .enablePlugins(SbtOsgi)
+  .dependsOn(core)
+  .settings(
+    osgiSettings,
+    commonSettings,
+    name := "osgirx-akka-api",
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-osgi" % akkaVersion,
+      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion
+    )
+  )
 
+lazy val akka = project
+  .enablePlugins(SbtOsgi)
+  .dependsOn(akkaApi)
+  .settings(
+    osgiSettings,
+    commonSettings,
+    name := "osgirx-akka",
+    libraryDependencies ++= Seq(
+    )
   )

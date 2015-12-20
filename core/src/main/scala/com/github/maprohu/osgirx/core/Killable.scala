@@ -1,6 +1,7 @@
-package com.github.maprohu.osgirx
+package com.github.maprohu.osgirx.core
 
 import rx.Rx
+import rx.core.Reactor
 
 /**
   * Created by pappmar on 09/12/2015.
@@ -15,6 +16,10 @@ object Killable {
 
   val Empty = new Killable {
     override def kill(): Unit = {}
+  }
+
+  implicit def reactorToKillable(rxv: Reactor[_]) : Killable = new Killable {
+    override def kill(): Unit = rxv.kill()
   }
 
   implicit def rxToKillable(rxv: Rx[_]) : Killable = new Killable {
@@ -43,4 +48,6 @@ object Killable {
 
   def wrap[T](rxv: Rx[T])(implicit ev: T => Killable) : Rx[T] =
     rx(rxv)(ev(_).kill())
+
+  implicit def nothingToKill[T](rxv: Rx[T]) : (Rx[T], Killable) = (rxv, Killable.Empty)
 }

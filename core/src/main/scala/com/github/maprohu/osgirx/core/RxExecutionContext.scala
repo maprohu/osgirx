@@ -1,4 +1,4 @@
-package com.github.maprohu.osgirx
+package com.github.maprohu.osgirx.core
 
 import scala.concurrent.ExecutionContext
 

@@ -1,4 +1,4 @@
-package com.github.maprohu.osgirx.impl
+package com.github.maprohu.osgirx.core.impl
 
 import org.osgi.framework.{BundleContext, BundleActivator}
 

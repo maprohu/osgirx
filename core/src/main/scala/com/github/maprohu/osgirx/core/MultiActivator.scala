@@ -1,6 +1,6 @@
-package com.github.maprohu.osgirx
+package com.github.maprohu.osgirx.core
 
-import org.osgi.framework.{BundleContext, BundleActivator}
+import org.osgi.framework.{BundleActivator, BundleContext}
 
 /**
   * Created by pappmar on 18/12/2015.
