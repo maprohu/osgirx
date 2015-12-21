@@ -1,8 +1,7 @@
 package com.github.maprohu.osgirx.akka.api
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import com.github.maprohu.osgirx.core.RxRef
+import com.github.maprohu.osgirx.ref.RxRef
 
 
 /**

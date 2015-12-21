@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.{HttpExt, Http}
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
-import com.github.maprohu.osgirx.core.RxRef
+import com.github.maprohu.osgirx.ref.RxRef
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._

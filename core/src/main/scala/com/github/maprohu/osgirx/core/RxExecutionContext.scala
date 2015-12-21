@@ -1,5 +1,7 @@
 package com.github.maprohu.osgirx.core
 
+import com.github.maprohu.osgirx.ref.RxRef
+
 import scala.concurrent.ExecutionContext
 
 /**

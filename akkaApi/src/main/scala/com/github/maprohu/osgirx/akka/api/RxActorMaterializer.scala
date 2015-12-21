@@ -1,7 +1,7 @@
 package com.github.maprohu.osgirx.akka.api
 
 import akka.stream.ActorMaterializer
-import com.github.maprohu.osgirx.core.RxRef
+import com.github.maprohu.osgirx.ref.RxRef
 
 /**
   * Created by pappmar on 18/12/2015.

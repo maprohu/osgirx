@@ -9,6 +9,7 @@ import scala.concurrent.duration._
   * Created by maprohu on 12/20/15.
   */
 object RunHttp extends App {
+  import com.github.maprohu.osgirx.core.RxRefOps._
 
   val akkaApiActivator = new Activator()
   akkaApiActivator.start(null)

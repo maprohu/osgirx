@@ -1,13 +1,13 @@
 import java.util.jar.Attributes
 
-val osgirxVersion = "0.1.2"
-val akkaApiVersion = "0.1.0"
+val osgirxVersion = "0.1.3-SNAPSHOT"
 
 val githubRepo = "osgirx"
 val osgiVersion = "5.0.0"
 val scalarxVersion = "0.2.8"
 val akkaHttpVersion = "2.0-M2"
 val akkaVersion = "2.3.14"
+val refVersion = "0.1.0"
 
 lazy val commonSettings = Seq(
   organization := "com.github.maprohu",
@@ -57,8 +57,21 @@ lazy val commonSettings = Seq(
 )
 
 
+lazy val ref = project
+  .enablePlugins(SbtOsgi)
+  .settings(
+    osgiSettings,
+    commonSettings,
+    name := "osgirx-ref",
+    version := refVersion,
+    libraryDependencies ++= Seq(
+      "com.github.maprohu" % "scalarx" % scalarxVersion
+    )
+  )
+
 lazy val core = project
   .enablePlugins(SbtOsgi)
+  .dependsOn(ref)
   .settings(
     osgiSettings,
     commonSettings,
@@ -76,7 +89,7 @@ lazy val akkaApi = project
     osgiSettings,
     commonSettings,
     name := "osgirx-akka-api",
-    version := akkaApiVersion,
+    version := osgirxVersion,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-osgi" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
@@ -111,7 +124,8 @@ lazy val root = (project in file("."))
   .aggregate(
     core,
     akka,
-    akkaHttp
+    akkaHttp,
+    akkaApi
   )
   .settings(
     publishArtifact := false,
